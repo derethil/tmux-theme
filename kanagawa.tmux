@@ -36,17 +36,31 @@ main() {
   local color_interpolation=()
   local color_values=()
   local temp
-  theme_name="$(get_tmux_option "@kanagawa_flavour" "wave")"
+  local theme_name="$(get_tmux_option "@kanagawa_flavour" "wave")"
+  local theme_path
 
   if [ ! -f "${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme" ]; then
+    echo "Theme not found; searching in custom themes directory."
     if [ -d "${custom_theme_path}" ]; then
+      echo "Custom theme directory found."
       if [ -f "${custom_theme_path}/${theme_name}.tmuxtheme" ]; then
+        echo "Custom theme found."
         theme_path="${custom_theme_path}/${theme_name}.tmuxtheme"
+      else
+        echo "Custom theme not found."
+        echo "Using default theme."
+        theme_path="${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme"
       fi
+    else
+      echo "Using default theme."
+      theme_path="${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme"
     fi
   else
+    echo "Theme found."
     theme_path="${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme"
   fi
+
+  echo $theme_path
 
   # NOTE: Pulling in the selected theme by the theme that's being set as local
   # variables.
