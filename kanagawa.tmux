@@ -22,19 +22,32 @@ main() {
   local tmux_commands=()
 
   # module directories
-  local custom_path modules_custom_path modules_status_path modules_window_path modules_pane_path
+  local custom_path modules_custom_path modules_status_path modules_window_path modules_pane_path custom_theme_path
   custom_path="$(get_tmux_option "@kanagawa_custom_plugin_dir" "${PLUGIN_DIR}/custom")"
+  custom_theme_path="$(get_tmux_option "@kanagawa_custom_theme_dir" "${PLUGIN_DIR}/customthemes")"
   modules_custom_path=$custom_path
   modules_status_path=$PLUGIN_DIR/status
   modules_window_path=$PLUGIN_DIR/window
   modules_pane_path=$PLUGIN_DIR/pane
+
 
   # load local theme
   local theme
   local color_interpolation=()
   local color_values=()
   local temp
-  theme="$(get_tmux_option "@kanagawa_flavour" "wave")"
+  theme_name="$(get_tmux_option "@kanagawa_flavour" "wave")"
+
+  if [ ! -f "${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme" ]; then
+    if [ -d "${custom_theme_path}" ]; then
+      if [ -f "${custom_theme_path}/${theme_name}.tmuxtheme" ]; then
+        theme_path="${custom_theme_path}/${theme_name}.tmuxtheme"
+      fi
+    fi
+  else
+    theme_path="${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme"
+  fi
+
   # NOTE: Pulling in the selected theme by the theme that's being set as local
   # variables.
   # https://github.com/dylanaraps/pure-sh-bible#parsing-a-keyval-file
@@ -53,7 +66,7 @@ main() {
     temp="${temp#\"}"
     color_interpolation+=("\#{$key}")
     color_values+=("${temp}")
-  done <"${PLUGIN_DIR}/themes/kanagawa_${theme}.tmuxtheme"
+  done <"${theme_path}"
 
   # status general
   local status_default status_justify status_background message_background
