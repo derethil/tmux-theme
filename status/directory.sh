@@ -2,9 +2,9 @@ show_directory() {
   local index icon color text module
 
   index=$1
-  icon=$(get_tmux_option "@kanagawa_directory_icon" "")
-  color=$(get_tmux_option "@kanagawa_directory_color" "$thm_pink")
-  text=$(get_tmux_option "@kanagawa_directory_text" "#{b:pane_current_path}")
+  icon=$(get_tmux_option "@theme_directory_icon" "")
+  color=$(get_tmux_option "@theme_directory_color" "$thm_pink")
+  text=$(get_tmux_option "@theme_directory_text" "#{b:pane_current_path}")
 
   module=$(build_status_module "$index" "$icon" "$color" "$text")
 

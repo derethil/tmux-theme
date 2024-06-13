@@ -2,7 +2,7 @@
 # NOTE: you can use vars with $<var> and ${<var>} as long as the str is double quoted: ""
 # WARNING: hex colors can't contain capital letters
 
-# --> Kanagawa (Wave)
+# --> Theme (Wave)
 thm_bg="#f2ecbc"
 thm_fg="#545464"
 thm_cyan="#5e857a"

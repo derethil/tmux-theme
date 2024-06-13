@@ -23,21 +23,21 @@ main() {
 
   # module directories
   local custom_path modules_custom_path modules_status_path modules_window_path modules_pane_path custom_theme_path
-  custom_path="$(get_tmux_option "@kanagawa_custom_plugin_dir" "${PLUGIN_DIR}/custom")"
-  custom_theme_path="$(get_tmux_option "@kanagawa_custom_theme_dir" "${PLUGIN_DIR}/customthemes")"
+  custom_path="$(get_tmux_option "@theme_custom_plugin_dir" "${PLUGIN_DIR}/custom")"
+  custom_theme_path="$(get_tmux_option "@theme_custom_theme_dir" "${PLUGIN_DIR}/customthemes")"
   modules_custom_path=$custom_path
   modules_status_path=$PLUGIN_DIR/status
   modules_window_path=$PLUGIN_DIR/window
   modules_pane_path=$PLUGIN_DIR/pane
 
-
   # load local theme
-  local theme
+  local theme_name
   local color_interpolation=()
   local color_values=()
   local temp
-  local theme_name="$(get_tmux_option "@kanagawa_flavour" "wave")"
   local theme_path
+
+  theme_name="$(get_tmux_option "@theme_flavour" "wave")"
 
   if [ ! -f "${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme" ]; then
     echo "Theme not found; searching in custom themes directory."
@@ -60,12 +60,12 @@ main() {
     theme_path="${PLUGIN_DIR}/themes/${theme_name}.tmuxtheme"
   fi
 
-  echo $theme_path
+  echo "$theme_path"
 
   # NOTE: Pulling in the selected theme by the theme that's being set as local
   # variables.
   # https://github.com/dylanaraps/pure-sh-bible#parsing-a-keyval-file
-  # shellcheck source=./kanagawa-wave.tmuxtheme
+  # shellcheck source=./theme-wave.tmuxtheme
   while IFS='=' read -r key val; do
     # Skip over lines containing comments.
     # (Lines starting with '#').
@@ -84,14 +84,14 @@ main() {
 
   # status general
   local status_default status_justify status_background message_background
-  status_default=$(get_tmux_option "@kanagawa_status_default" "on")
+  status_default=$(get_tmux_option "@theme_status_default" "on")
   # shellcheck disable=SC2121
   set status "$status_default"
 
-  status_justify=$(get_tmux_option "@kanagawa_status_justify" "left")
+  status_justify=$(get_tmux_option "@theme_status_justify" "left")
   set status-justify "$status_justify"
 
-  status_background=$(get_tmux_option "@kanagawa_status_background" "theme")
+  status_background=$(get_tmux_option "@theme_status_background" "theme")
   if [ "${status_background}" = "theme" ]; then
     set status-bg "${thm_bg}"
     message_background="${thm_gray}"
@@ -116,19 +116,19 @@ main() {
   local pane_border_status pane_border_style \
     pane_active_border_style pane_left_separator pane_middle_separator \
     pane_right_separator pane_number_position pane_format
-  pane_status_enable=$(get_tmux_option "@kanagawa_pane_status_enabled" "no") # yes
-  pane_border_status=$(get_tmux_option "@kanagawa_pane_border_status" "off") # bottom
+  pane_status_enable=$(get_tmux_option "@theme_pane_status_enabled" "no") # yes
+  pane_border_status=$(get_tmux_option "@theme_pane_border_status" "off") # bottom
   pane_border_style=$(
-    get_interpolated_tmux_option "@kanagawa_pane_border_style" "fg=${thm_gray}"
+    get_interpolated_tmux_option "@theme_pane_border_style" "fg=${thm_gray}"
   )
   pane_active_border_style=$(
-    get_interpolated_tmux_option "@kanagawa_pane_active_border_style" \
+    get_interpolated_tmux_option "@theme_pane_active_border_style" \
       "#{?pane_in_mode,fg=${thm_yellow},#{?pane_synchronized,fg=${thm_magenta},fg=${thm_orange}}}"
   )
-  pane_left_separator=$(get_tmux_option "@kanagawa_pane_left_separator" "█")
-  pane_middle_separator=$(get_tmux_option "@kanagawa_pane_middle_separator" "█")
-  pane_right_separator=$(get_tmux_option "@kanagawa_pane_right_separator" "█")
-  pane_number_position=$(get_tmux_option "@kanagawa_pane_number_position" "left") # right, left
+  pane_left_separator=$(get_tmux_option "@theme_pane_left_separator" "█")
+  pane_middle_separator=$(get_tmux_option "@theme_pane_middle_separator" "█")
+  pane_right_separator=$(get_tmux_option "@theme_pane_right_separator" "█")
+  pane_number_position=$(get_tmux_option "@theme_pane_number_position" "left") # right, left
   pane_format=$(load_modules "pane_default_format" "$modules_custom_path" "$modules_pane_path")
 
   setw pane-border-status "$pane_border_status"
@@ -141,14 +141,14 @@ main() {
     window_middle_separator window_number_position window_status_enable \
     window_format window_current_format
 
-  window_status_separator=$(get_interpolated_tmux_option "@kanagawa_window_separator" "")
+  window_status_separator=$(get_interpolated_tmux_option "@theme_window_separator" "")
   setw window-status-separator "$window_status_separator"
 
-  window_left_separator=$(get_tmux_option "@kanagawa_window_left_separator" "█")
-  window_right_separator=$(get_tmux_option "@kanagawa_window_right_separator" "█")
-  window_middle_separator=$(get_tmux_option "@kanagawa_window_middle_separator" "█ ")
-  window_number_position=$(get_tmux_option "@kanagawa_window_number_position" "left") # right, left
-  window_status_enable=$(get_tmux_option "@kanagawa_window_status_enable" "no")       # right, left
+  window_left_separator=$(get_tmux_option "@theme_window_left_separator" "█")
+  window_right_separator=$(get_tmux_option "@theme_window_right_separator" "█")
+  window_middle_separator=$(get_tmux_option "@theme_window_middle_separator" "█ ")
+  window_number_position=$(get_tmux_option "@theme_window_number_position" "left") # right, left
+  window_status_enable=$(get_tmux_option "@theme_window_status_enable" "no")       # right, left
 
   window_format=$(load_modules "window_default_format" "$modules_custom_path" "$modules_window_path")
   setw window-status-format "$(do_color_interpolation "$window_format")"
@@ -159,16 +159,16 @@ main() {
   # status module
   local status_left_separator status_right_separator status_connect_separator \
     status_fill status_modules_left status_modules_right
-  status_left_separator=$(get_tmux_option "@kanagawa_status_left_separator" "")
-  status_right_separator=$(get_tmux_option "@kanagawa_status_right_separator" "█")
-  status_connect_separator=$(get_tmux_option "@kanagawa_status_connect_separator" "yes")
-  status_fill=$(get_tmux_option "@kanagawa_status_fill" "icon")
+  status_left_separator=$(get_tmux_option "@theme_status_left_separator" "")
+  status_right_separator=$(get_tmux_option "@theme_status_right_separator" "█")
+  status_connect_separator=$(get_tmux_option "@theme_status_connect_separator" "yes")
+  status_fill=$(get_tmux_option "@theme_status_fill" "icon")
 
-  status_modules_left=$(get_tmux_option "@kanagawa_status_modules_left" "")
+  status_modules_left=$(get_tmux_option "@theme_status_modules_left" "")
   loaded_modules_left=$(load_modules "$status_modules_left" "$modules_custom_path" "$modules_status_path")
   set status-left "$(do_color_interpolation "$loaded_modules_left")"
 
-  status_modules_right=$(get_tmux_option "@kanagawa_status_modules_right" "application session")
+  status_modules_right=$(get_tmux_option "@theme_status_modules_right" "application session")
   loaded_modules_right=$(load_modules "$status_modules_right" "$modules_custom_path" "$modules_status_path")
   set status-right "$(do_color_interpolation "$loaded_modules_right")"
 

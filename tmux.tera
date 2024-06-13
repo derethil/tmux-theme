@@ -9,7 +9,7 @@ whiskers:
 # NOTE: you can use vars with $<var> and ${<var>} as long as the str is double quoted: ""
 # WARNING: hex colors can't contain capital letters
 
-# --> Kanagawa ({{ flavor.identifier | capitalize }})
+# --> Theme ({{ flavor.identifier | capitalize }})
 thm_bg="#{{ palette.base.hex | lower }}"
 thm_fg="#{{ palette.text.hex | lower }}"
 thm_cyan="#{{ palette.sky.hex| lower }}"
